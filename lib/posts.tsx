@@ -6,6 +6,14 @@ import html from "remark-html";
 
 const postsDirectory = path.join(process.cwd(), "content/posts");
 
+export type Post = {
+    slug: string;
+    title: string;
+    date: string;
+    contentHtml: string;
+    tags: string[];
+}
+
 export async function getPost(slug: string) {
     const fullPath = path.join(postsDirectory, `${slug}.md`);
 
@@ -24,6 +32,7 @@ export async function getPost(slug: string) {
         title: data.title,
         date: data.date,
         contentHtml: processed.toString(),
+        tags: data.tags || []
     };
 }
 
