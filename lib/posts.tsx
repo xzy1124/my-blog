@@ -13,6 +13,16 @@ export type Post = {
     contentHtml: string;
     tags: string[];
 }
+// 去掉 HTML 标签，保留纯文本
+export function extractPlainText(html: string) {
+    return html.replace(/<[^>]+>/g, "");
+}
+
+// 获取前 N 个字符作为摘要
+export function getSummary(html: string, length = 120) {
+    const plain = extractPlainText(html);
+    return plain.length > length ? plain.slice(0, length) + "..." : plain;
+}
 
 export async function getPost(slug: string) {
     const fullPath = path.join(postsDirectory, `${slug}.md`);

@@ -1,5 +1,6 @@
-
+import { redirect } from "next/navigation"
 export default function Home() {
+  redirect("/posts")
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
       <h1 className="text-4xl font-bold text-gray-900">言宝的个人博客</h1>
