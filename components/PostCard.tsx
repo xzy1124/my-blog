@@ -7,7 +7,9 @@ interface PostCardProps {
 export default function PostCard({post}: PostCardProps) {
     return (
         <li className="border rounded-lg p-6 shadow hover:shadow-lg transition">
-            <Link href={`posts/${post.slug}`}
+            {/* 注意这里的posts前面没有/就是相对路径是当前路径+posts/后面 */}
+            {/* 加上/就是绝对路径，会直接跳到/posts/${post.slug} */}
+            <Link href={`/posts/${post.slug}`}
                   className="text-2xl font-bold text-blue-600 hover:underline"
             >
                 {post.title}
