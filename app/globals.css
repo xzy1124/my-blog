@@ -1,5 +1,6 @@
 @import "tailwindcss";
-
+/* 加上这一行tailwindcss/typography 插件,用来渲染 Markdown 内容美化 */
+@plugin "@tailwindcss/typography"; 
 :root {
   --background: #ffffff;
   --foreground: #171717;
