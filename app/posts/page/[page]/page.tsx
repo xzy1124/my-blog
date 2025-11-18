@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getPaginatedPosts } from "@/lib/pagination";
+import Banner from "@/components/Banner";
 import { Post, getPost, getAllSlugs, getSummary } from "@/lib/posts";
 
 type Props = {
@@ -8,13 +9,15 @@ type Props = {
 
 export default async function PostsPage({ params }: Props) {
     const { page } = await params;
-    const pageNumber = parseInt(page, 3);
+    // 这里的10是十进制，等价于Number(page)
+    const pageNumber = parseInt(page, 10);
 
     // 分页数据
     const { currentPosts, totalPages } = await getPaginatedPosts(pageNumber);
 
     return (
         <div className="max-w-4xl mx-auto p-8">
+            <Banner />
             <h1 className="text-4xl font-bold mb-8">所有文章</h1>
 
             <ul className="grid grid-cols-1 gap-6">

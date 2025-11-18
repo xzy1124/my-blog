@@ -3,6 +3,7 @@ import {getAllSlugs, getPost } from "@/lib/posts"
 import { getPaginatedPosts } from "@/lib/pagination";
 import { Post } from "@/lib/posts";
 import { redirect } from "next/navigation"
+import Banner from "@/components/Banner";
 export default async function PostPage() {
     // 默认让posts展示的是第一页的内容
     redirect("/posts/page/1")
@@ -24,6 +25,7 @@ export default async function PostPage() {
     posts.sort((a, b) => (a.date > b.date ? -1 : 1))
     return (
         <div className="max-w-4xl mx-auto p-8">
+            <Banner />
             <h1 className="text-4xl font-bold mb-8">所有文章</h1>
             <ul className="space-y-6">
                 {posts.map((post) => (
