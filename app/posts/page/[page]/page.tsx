@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { getPaginatedPosts } from "@/lib/pagination";
 import Banner from "@/components/Banner";
-import { Post, getPost, getAllSlugs, getSummary } from "@/lib/posts";
-
+import PostCard from "@/components/PostCard";
 type Props = {
     params: Promise<{page: string;}>;
 };
@@ -22,30 +21,7 @@ export default async function PostsPage({ params }: Props) {
 
             <ul className="grid grid-cols-1 gap-6">
                 {currentPosts.map((post) => (
-                    <li key={post.slug} className="border rounded-lg p-6 shadow hover:shadow-lg transition">
-                        <Link href={`/posts/${post.slug}`} className="text-2xl font-bold text-blue-600 hover:underline">
-                            {post.title}
-                        </Link>
-
-                        <p className="text-sm text-gray-500 mt-1">{post.date}</p>
-
-                        {/* 🔥 使用纯文本摘要，不再用 dangerouslySetInnerHTML */}
-                        <p className="text-gray-700 mt-3">{getSummary(post.contentHtml, 120)}</p>
-
-                        {/* 标签 */}
-                        <ul className="flex flex-wrap gap-2 mt-3">
-                            {post.tags.map((tag) => (
-                                <li key={tag}>
-                                    <Link
-                                        href={`/tags/${encodeURIComponent(tag)}`}
-                                        className="text-sm text-blue-500 hover:underline"
-                                    >
-                                        #{tag}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
+                    <PostCard key={post.slug} post={post} />
                 ))}
             </ul>
 
