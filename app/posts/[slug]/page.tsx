@@ -3,6 +3,7 @@
 import { getPost, getAllSlugs } from "@/lib/posts";
 import Comment from "@/components/Comment";
 import Image from "next/image";
+import LoginButton from "@/components/LoginButton";
 type ParamsPromise = Promise<{ slug: string }>;
 
 // 1. 生成静态路由参数
@@ -70,6 +71,8 @@ export default async function PostDetail({ params }: PageProps) {
     return (
         <main className="max-w-3xl mx-auto p-8 bg-gray-100">
             <article className="prose bg-white p-6 rounded shadow">
+                {/* 加一个登录入口 */}
+                <LoginButton />
                 {post.coverImage && (
                     <Image
                         src={post.coverImage}
@@ -83,7 +86,6 @@ export default async function PostDetail({ params }: PageProps) {
                 <p className="text-sm text-gray-500">{post.date}</p>
                 <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
             </article>
-
             {/* 🔹 评论组件 */}
             <Comment postId={slug} />
         </main>

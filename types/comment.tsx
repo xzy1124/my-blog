@@ -1,8 +1,8 @@
 export type Comment = {
-    id: string;
-    postId: string;
+    id: number;
+    post_id: string;
     content: string;
-    userId: string;
-    userName: string;
-    createdAt: string;
+    user_id: string;
+    created_at: string;
+    updated_at: string; // 新增字段
 };
