@@ -1,0 +1,34 @@
+[
+  {
+    "id": "384d677a-b343-4ed9-8ac1-24cf667a5238",
+    "postId": "blog-with-love",
+    "content": "方法",
+    "userId": "171132516",
+    "userName": "xzy1124",
+    "createdAt": "2025-11-19T03:17:04.967Z"
+  },
+  {
+    "id": "672909ac-222f-436d-8199-c75ac285564d",
+    "postId": "blog-with-love",
+    "content": "测试",
+    "userId": "171132516",
+    "userName": "xzy1124",
+    "createdAt": "2025-11-19T03:17:34.251Z"
+  },
+  {
+    "id": "6672de7f-b5a9-449e-a2e7-66b0ca54730b",
+    "postId": "hello-nextjs",
+    "content": "评论测试",
+    "userId": "171132516",
+    "userName": "xzy1124",
+    "createdAt": "2025-11-19T05:11:49.635Z"
+  },
+  {
+    "id": "86cce630-c30a-4c67-be49-a9ad3eb78e07",
+    "postId": "hello-nextjs",
+    "content": "回车发送评论",
+    "userId": "171132516",
+    "userName": "xzy1124",
+    "createdAt": "2025-11-19T05:16:11.625Z"
+  }
+]

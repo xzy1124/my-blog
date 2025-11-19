@@ -1,6 +1,7 @@
 // app/posts/[slug]/page.tsx
+// "use client"
 import { getPost, getAllSlugs } from "@/lib/posts";
-
+import Comment from "@/components/Comment";
 type ParamsPromise = Promise<{ slug: string }>;
 
 export async function generateStaticParams() {
@@ -28,10 +29,15 @@ export default async function PostDetail({ params }: PageProps) {
     }
 
     return (
-        <article className="prose mx-auto p-8">
-            <h1>{post.title}</h1>
-            <p className="text-sm text-gray-500">{post.date}</p>
-            <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
-        </article>
+        <main className="max-w-3xl mx-auto p-8 bg-gray-100">
+            <article className="prose bg-white p-6 rounded shadow">
+                <h1>{post.title}</h1>
+                <p className="text-sm text-gray-500">{post.date}</p>
+                <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+            </article>
+
+            {/* 🔹 评论组件 */}
+            <Comment postId={slug} />
+        </main>
     );
 }
