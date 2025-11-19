@@ -1,56 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/route";
+import { prisma } from "@/lib/prisma";
 
-// 评论存储文件
-const COMMENTS_FILE = path.join(process.cwd(), "data/comments.json");
-
-// 定义评论类型
-export type Comment = {
-    id: string;
-    postId: string;
-    userId: string;
-    userName: string;
-    content: string;
-    createdAt: string;
-};
-
-// GET 获取评论
 export async function GET(req: NextRequest) {
+    // 获取查询参数中的postId
     const postId = req.nextUrl.searchParams.get("postId");
-    const comments: Comment[] = JSON.parse(fs.readFileSync(COMMENTS_FILE, "utf-8"));
-    const filtered = postId ? comments.filter(c => c.postId === postId) : comments;
-    return NextResponse.json(filtered);
+    // prisma的作用是使用内置的查询方法来查询评论
+    // 1.如果有postId，就查询该文章的所有评论
+    // 2.如果没有postId，就查询所有评论
+    const comments = await prisma.comment.findMany({
+        where: postId ? { postId } : {},
+        orderBy: { createdAt: "asc" },
+    });
+
+    return NextResponse.json(comments);
 }
 
-// POST 提交评论
 export async function POST(req: NextRequest) {
-    // 手动指定泛型，保证 session.user 有类型
-    const session = await getServerSession<typeof authOptions>(authOptions);
-    if (!session) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const session = await getServerSession(authOptions);
+    if (!session)
+        return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
     const { postId, content } = await req.json();
-    if (!content || !postId) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-
-    const comments: Comment[] = JSON.parse(fs.readFileSync(COMMENTS_FILE, "utf-8"));
-
-    const newComment: Comment = {
-        id: uuidv4(),
-        postId,
-        content,
-        userId: session.user.id,
-        userName: session.user.name!,
-        createdAt: new Date().toISOString(),
-    };
-
-    comments.push(newComment);
-    fs.writeFileSync(COMMENTS_FILE, JSON.stringify(comments, null, 2));
+    if (!postId || !content)
+        return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    // 使用prisma的create方法创建评论
+    // 1.将评论内容、文章ID、用户ID和用户名存储到数据库中
+    // 2.返回创建的评论对象
+    const newComment = await prisma.comment.create({
+        data: {
+            postId,
+            content,
+            userId: session.user.id,
+            userName: session.user.name || "用户",
+        },
+    });
 
     return NextResponse.json(newComment);
 }
+
 
 /**
  * 前端只需要用fetch发起POST请求，然后请求体中包含postId和content字段即可

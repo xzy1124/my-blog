@@ -1,0 +1,18 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 评论表
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String
+  content   String
+  userId    String
+  userName  String
+  createdAt DateTime @default(now())
+}

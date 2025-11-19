@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import type { Comment } from "@/app/api/comments/route";
+import type { Comment } from "@/types/comment";
 /**
  * 1.评论组件就是一个输入框，点击按钮能发布评论
  * 2.评论组件需要一个状态来存储评论内容
