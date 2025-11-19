@@ -6,6 +6,9 @@ const handler = NextAuth({
         GitHubProvider({
             clientId: process.env.GITHUB_CLIENT_ID!,
             clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+            httpOptions: {
+                timeout: 10000,
+            },
         }),
     ],
     callbacks: {
