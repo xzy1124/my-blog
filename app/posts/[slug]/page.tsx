@@ -17,16 +17,21 @@ export async function generateMetadata({ params }: { params: ParamsPromise }) {
     const {slug} = await params //先等待params解析完成，拿到slug
     const post = await getPost(slug) //再根据slug获取文章详情
     if(!post) return {}
+    // 封面完整 URL
+    const coverUrl = post.coverImage
+        ? `https://nasopalatine-contrastedly-marci.ngrok-free.dev${post.coverImage}`
+        : "https://nasopalatine-contrastedly-marci.ngrok-free.dev/windows.svg";
+
     return {
         title: post.title,
         description: post.summary,
         openGraph: {
             title: post.title,
             description: post.summary,
-            url: `http://localhost:3000/posts/${slug}`,
+            url: `https://nasopalatine-contrastedly-marci.ngrok-free.dev/posts/${slug}`,
             images: [
                 {
-                    url: post.coverImage || "/windows.svg",
+                    url: coverUrl,
                     width: 800,
                     height: 600,
                 }
@@ -37,7 +42,7 @@ export async function generateMetadata({ params }: { params: ParamsPromise }) {
             card: "summary_large_image",
             title: post.title,
             description: post.summary,
-            images: post.coverImage || "/windows.svg",
+            images: coverUrl,
         }
     }
 
