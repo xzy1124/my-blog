@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import PostCard from "./PostCard"
-import { Post } from "@/lib/posts"
+import { Post } from "@/types/articles"
 export default function SearchBox(){
     const [keyword, setKeyword] = useState("") //用来实时监测输入框的变化
     const [loading, setLoading] = useState(false) //用来监测搜索是否正在进行

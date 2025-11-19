@@ -2,13 +2,47 @@
 // "use client"
 import { getPost, getAllSlugs } from "@/lib/posts";
 import Comment from "@/components/Comment";
+import Image from "next/image";
 type ParamsPromise = Promise<{ slug: string }>;
 
+// 1. 生成静态路由参数
 export async function generateStaticParams() {
     // 返回形如 [{ slug: 'hello-nextjs' }, { slug: 'blog-with-love' }]
     return getAllSlugs().map((slug) => ({ slug }));
 }
 
+// 2.为文章生成SEO/分享Meta标签
+export async function generateMetadata({ params }: { params: ParamsPromise }) {
+    // const post = await getPost(params.slug)
+    const {slug} = await params //先等待params解析完成，拿到slug
+    const post = await getPost(slug) //再根据slug获取文章详情
+    if(!post) return {}
+    return {
+        title: post.title,
+        description: post.summary,
+        openGraph: {
+            title: post.title,
+            description: post.summary,
+            url: `http://localhost:3000/posts/${slug}`,
+            images: [
+                {
+                    url: post.coverImage || "/windows.svg",
+                    width: 800,
+                    height: 600,
+                }
+            ],
+            type: "article",
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: post.title,
+            description: post.summary,
+            images: post.coverImage || "/windows.svg",
+        }
+    }
+
+}
+// 3.页面主体
 type PageProps = {
     params: ParamsPromise; // Next.js 15: params 是 Promise
 };
@@ -31,6 +65,15 @@ export default async function PostDetail({ params }: PageProps) {
     return (
         <main className="max-w-3xl mx-auto p-8 bg-gray-100">
             <article className="prose bg-white p-6 rounded shadow">
+                {post.coverImage && (
+                    <Image
+                        src={post.coverImage}
+                        alt="封面"
+                        width={50} //指定宽高，next.js会自动处理图片缩放
+                        height={25}
+                        className="mb-4 runded"
+                    />
+                )}
                 <h1>{post.title}</h1>
                 <p className="text-sm text-gray-500">{post.date}</p>
                 <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />

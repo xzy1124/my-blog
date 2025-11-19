@@ -2,7 +2,7 @@
 title: "Hello Next.js"
 date: "2025-11-18"
 tags: ["nextjs", "blog"]
-# cover: "/images/hello.jpg"
+cover: "/images/car.png"
 ---
 
 # 欢迎来到我的第一篇文章

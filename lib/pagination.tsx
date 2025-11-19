@@ -1,5 +1,5 @@
 import { getAllSlugs, getPost } from "./posts"
-import { Post } from "./posts";
+import { Post } from "@/types/articles";
 // 创建分页函数，接收page参数，返回分页数据
 export async function getPaginatedPosts(page: number, pageSize = 3){
     // 先从隔壁posts取出所有文章

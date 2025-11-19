@@ -1,4 +1,4 @@
-import { Post } from "@/lib/posts";
+import { Post } from "@/types/articles";
 import Link from "next/link";
 interface PostCardProps {
     // 这个接口定义了PostCard组件的props
