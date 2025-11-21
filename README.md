@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/badge/license-MIT-green) ![Vercel](https://img.shields.io/badge/deployed-on-Vercel-blue)
 
-**My Blog** 是一个全栈博客系统，基于 **Next.js** + **Supabase** 实现，支持 GitHub OAuth 登录、文章展示、评论功能，部署在 Vercel 上。  
+**My Blog** 是一个全栈博客系统，基于 **Next.js** + **Supabase** 实现，支持 GitHub OAuth 登录、文章展示、评论功能，部署在 Vercel 上。线上展示：https://my-blog-gules-eta-47.vercel.app/
 
 ---
 
