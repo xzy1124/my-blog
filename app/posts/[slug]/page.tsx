@@ -1,93 +1,79 @@
-// app/posts/[slug]/page.tsx
-// "use client"
-import { getPost, getAllSlugs } from "@/lib/posts";
-import Comment from "@/components/Comment";
-import Image from "next/image";
-import LoginButton from "@/components/LoginButton";
-type ParamsPromise = Promise<{ slug: string }>;
+import { supabaseServer } from '@/lib/supabase.server'
+import Comment from '@/components/Comment'
+import Image from 'next/image'
+import LoginButton from '@/components/LoginButton'
+import { formatDateTime } from '@/lib/date'
 
-// 1. 生成静态路由参数
-export async function generateStaticParams() {
-    // 返回形如 [{ slug: 'hello-nextjs' }, { slug: 'blog-with-love' }]
-    return getAllSlugs().map((slug) => ({ slug }));
-}
+type PageProps = { params: { slug: string } | Promise<{ slug: string }> }
 
-// 2.为文章生成SEO/分享Meta标签
-export async function generateMetadata({ params }: { params: ParamsPromise }) {
-    // const post = await getPost(params.slug)
-    const {slug} = await params //先等待params解析完成，拿到slug
-    const post = await getPost(slug) //再根据slug获取文章详情
-    if(!post) return {}
-    // 封面完整 URL
-    const coverUrl = post.coverImage
-        ? `https://nasopalatine-contrastedly-marci.ngrok-free.dev${post.coverImage}`
-        : "https://nasopalatine-contrastedly-marci.ngrok-free.dev/windows.svg";
+// ⭐ 从 Supabase 获取文章
+async function fetchPost(params: PageProps['params']) {
+    const resolvedParams = await params
+    const { data, error } = await supabaseServer
+        .from('articles')
+        .select('slug, title, content, cover_url, tags, created_at')
+        .eq('slug', resolvedParams.slug)
+        .single()
+
+    if (error || !data) return null
 
     return {
+        slug: data.slug,
+        title: data.title,
+        contentHtml: data.content, // 前端直接用 content
+        coverImage: data.cover_url || '',
+        tags: data.tags || [],
+        date: data.created_at,
+    }
+}
+
+// 1️⃣ 静态路径生成
+export async function generateStaticParams() {
+    const { data: articles } = await supabaseServer.from('articles').select('slug')
+    if (!articles) return []
+    return articles.map((a: { slug: string }) => ({ slug: a.slug }))
+}
+
+// 2️⃣ SEO Metadata
+export async function generateMetadata({ params }: PageProps) {
+    const post = await fetchPost(params)
+    if (!post) return {}
+    const coverUrl = post.coverImage || '/windows.svg'
+    return {
         title: post.title,
-        description: post.summary,
+        description: post.contentHtml.slice(0, 100),
         openGraph: {
             title: post.title,
-            description: post.summary,
-            url: `https://nasopalatine-contrastedly-marci.ngrok-free.dev/posts/${slug}`,
-            images: [
-                {
-                    url: coverUrl,
-                    width: 800,
-                    height: 600,
-                }
-            ],
-            type: "article",
+            description: post.contentHtml.slice(0, 100),
+            url: `/posts/${post.slug}`,
+            images: [{ url: coverUrl, width: 800, height: 600 }],
+            type: 'article',
         },
         twitter: {
-            card: "summary_large_image",
+            card: 'summary_large_image',
             title: post.title,
-            description: post.summary,
+            description: post.contentHtml.slice(0, 100),
             images: coverUrl,
-        }
+        },
     }
-
 }
-// 3.页面主体
-type PageProps = {
-    params: ParamsPromise; // Next.js 15: params 是 Promise
-};
 
+// 3️⃣ 页面主体
 export default async function PostDetail({ params }: PageProps) {
-    // ⭐ 非常关键：params 是 Promise，必须 await
-    const { slug } = await params;
-
-    // 从你之前写的 lib/posts.ts 中读取 Markdown 并转换为 HTML
-    const post = await getPost(slug);
-
-    if (!post) {
-        return (
-            <div className="p-8 max-w-2xl mx-auto text-center text-red-600">
-                文章不存在
-            </div>
-        );
-    }
+    const post = await fetchPost(params)
+    if (!post) return <div className="p-8 max-w-2xl mx-auto text-center text-red-600">文章不存在</div>
 
     return (
         <main className="max-w-3xl mx-auto p-8 bg-gray-100">
             <article className="prose bg-white p-6 rounded shadow">
-                {/* 加一个登录入口 */}
                 <LoginButton />
-                {post.coverImage && (
-                    <Image
-                        src={post.coverImage}
-                        alt="封面"
-                        width={50} //指定宽高，next.js会自动处理图片缩放
-                        height={25}
-                        className="mb-4 runded"
-                    />
-                )}
+                {/* 不再显示封面，只在列表页&分享页展示 */}
+
                 <h1>{post.title}</h1>
-                <p className="text-sm text-gray-500">{post.date}</p>
+                <p className="text-sm text-gray-500">{formatDateTime(post.date)}</p>
                 <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
             </article>
-            {/* 🔹 评论组件 */}
-            <Comment postId={slug} />
+            <Comment postId={post.slug} />
         </main>
-    );
+    )
 }

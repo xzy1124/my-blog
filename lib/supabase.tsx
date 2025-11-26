@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_KEY!;
-
-export const supabase = createClient(supabaseUrl, supabaseKey);
-// 配置了supabase客户端，用于在服务器端调用，就可以导入supabase去操作数据库了
+// 这是supabase客户端，用于前端页面调用的，后端调用需要使用服务角色密钥
+export const supabaseClient = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
