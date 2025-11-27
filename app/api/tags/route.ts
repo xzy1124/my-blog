@@ -1,10 +1,10 @@
 // 都写到这一步了应该明白是怎么一回事了,api下面的都是用来写后端的,前端调用的都是这个文件
 import { NextResponse } from "next/server";
-import { supabaseClient } from "@/lib/supabase";
+import { supabaseServer } from "@/lib/supabase.server";
 
 // 创建一个GET方法用来前端发起`/api/tags`请求,用来获取所有文章的标签
 export async function GET() {
-    const { data: articles, error } = await supabaseClient
+    const { data: articles, error } = await supabaseServer
         .from("articles")
         .select("tags");
 

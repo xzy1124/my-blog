@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
     try {
-        const { data, error } = await supabase
+        const { data, error } = await supabase  
             .from("comments")
             .insert([{ post_id: postId, content, user_id: session.user.id }])
             .select();

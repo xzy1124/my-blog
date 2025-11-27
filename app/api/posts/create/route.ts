@@ -1,14 +1,11 @@
 import { NextResponse } from 'next/server'
 import slugify from 'slugify'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseServer } from '@/lib/supabase.server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
 // ⚠ 使用 service role key
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+const supabase = supabaseServer
 
 export async function POST(req: Request) {
     try {
