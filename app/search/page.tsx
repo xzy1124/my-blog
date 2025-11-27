@@ -47,7 +47,7 @@ export default function SearchPage() {
     return (
         <div className="p-6">
             <h2 className="text-2xl font-bold mb-4">
-                搜索结果：{keyword}（{articles.length} 篇）
+                搜索结果：{keyword}({articles.length} 篇)
             </h2>
 
             <ul className="space-y-3">

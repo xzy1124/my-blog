@@ -2,6 +2,7 @@ import { supabaseServer } from '@/lib/supabase.server'
 import Comment from '@/components/Comment'
 import { formatDateTime } from '@/lib/date'
 import ReactMarkdown from 'react-markdown'
+import DeleteButton from '@/components/DeleteButton'
 //这是每一个文章的详情页,根据slug来获取文章的详情(标题内容和图片的)[slug]代表文章标题
 type PageProps = { params: { slug: string } | Promise<{ slug: string }> }
 
@@ -10,13 +11,14 @@ async function fetchPost(params: PageProps['params']) {
     const resolvedParams = await params
     const { data, error } = await supabaseServer
         .from('articles')
-        .select('slug, title, content, cover_url, tags, created_at')
+        .select('id, slug, title, content, cover_url, tags, created_at')
         .eq('slug', resolvedParams.slug)
         .single()
 
     if (error || !data) return null
 
     return {
+        id: data.id,
         slug: data.slug,
         title: data.title,
         contentHtml: data.content, // 前端直接用 content
@@ -72,6 +74,10 @@ export default async function PostDetail({ params }: PageProps) {
                 <p className="text-sm text-gray-500">{formatDateTime(post.date)}</p>
                 {/* ✅ 使用 react-markdown 渲染 content */}
                 <ReactMarkdown>{post.contentHtml}</ReactMarkdown>
+                <div className="mt-4">
+                    {/* pass numeric id to delete route (was previously passing slug) */}
+                    <DeleteButton articleId={post.id} />
+                </div>
 
             </article>
             <Comment postId={post.slug} />

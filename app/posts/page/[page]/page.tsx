@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getPaginatedArticles } from "@/lib/pagination";
 import Banner from "@/components/Banner";
 import PostCard from "@/components/PostCard";
-// 这是文章列表页,根据分页参数来获取文章列表,默认是第一页,[page]代表123页
+// 这是文章列表页.展示的是一个列表,根据分页参数来获取文章列表,默认是第一页,[page]代表123页
 type Props = {
     params: Promise<{page: string;}>;
 };
