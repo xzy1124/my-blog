@@ -1,9 +1,7 @@
-import React from "react";
-// components/Banner.tsx
 export default function Banner() {
     return (
-        <div className="w-full h-48 bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center rounded-xl text-white text-3xl font-bold mb-10">
-            Welcome to My Blog 🚀
+        <div className="w-full h-64 bg-cover bg-center rounded-lg mb-6 bg-red-500"
+            style={{ backgroundImage: "url('/study.jpg')" }}>
         </div>
     );
 }

@@ -1,22 +1,31 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import CreatableSelect from 'react-select/creatable'
 import MDEditor from '@uiw/react-md-editor'
 import '@uiw/react-md-editor/markdown-editor.css'
 import '@uiw/react-markdown-preview/markdown.css'
 
+type TagOption = { label: string; value: string }
+
 export default function NewPostPage() {
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
-    const [tags, setTags] = useState('')
+    const [tags, setTags] = useState<TagOption[]>([])
     const [coverFile, setCoverFile] = useState<File | null>(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
+
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const editorContainerRef = useRef<HTMLDivElement | null>(null)
     const imageUploadInputRef = useRef<HTMLInputElement | null>(null)
 
-        
+    const existingTags: TagOption[] = [
+        { label: 'React', value: 'React' },
+        { label: 'Next.js', value: 'Next.js' },
+        { label: 'Supabase', value: 'Supabase' }
+    ]
+
     useEffect(() => {
         const container = editorContainerRef.current
         if (!container) return
@@ -38,36 +47,25 @@ export default function NewPostPage() {
         }
     }, [])
 
-    // 🔥 使用新建 API 上传 Markdown 图片
     const handleMarkdownImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
-        if (!file){
-            alert('请先选择文件')
-            return
-        }
+        if (!file) return alert('请先选择文件')
 
         const formData = new FormData()
         formData.append('image', file)
 
         try {
-            const res = await fetch('/api/posts/upload-image', {
-                method: 'POST',
-                body: formData
-            })
+            // 这是图片插入逻辑,像api/posts/upload-image发起请求,返回图片url
+            const res = await fetch('/api/posts/upload-image', { method: 'POST', body: formData })
             const data = await res.json()
-            if (!res.ok) {
-                alert(data.message || '图片上传失败')
-                return
-            }
+            if (!res.ok) return alert(data.message || '图片上传失败')
 
-            // 上传成功，插入到 Markdown
             setContent(prev => `${ prev }\n\n![](${ data.url })`)
         } catch (err) {
             alert('图片上传失败')
             console.error(err)
         }
 
-        // 清空文件选择
         if (imageUploadInputRef.current) imageUploadInputRef.current.value = ''
     }
 
@@ -80,28 +78,19 @@ export default function NewPostPage() {
             const formData = new FormData()
             formData.append('title', title)
             formData.append('content', content)
-            formData.append('tags', tags)
+            formData.append('tags', JSON.stringify(tags.map(t => t.value)))
             if (coverFile) formData.append('cover', coverFile)
 
-            const res = await fetch('/api/posts/create', {
-                method: 'POST',
-                body: formData
-            })
+            const res = await fetch('/api/posts/create', { method: 'POST', body: formData })
             const data = await res.json()
             setLoading(false)
 
-            if (!res.ok) {
-                setError(data.message || '发布失败')
-                return
-            }
+            if (!res.ok) return setError(data.message || '发布失败')
 
-            // 新窗口打开文章
-            window.open(`/posts/${ data.article.slug } `)
-
-            // 清空表单
+            window.open(`/posts/${ data.article.slug }`)
             setTitle('')
             setContent('')
-            setTags('')
+            setTags([])
             setCoverFile(null)
             if (fileInputRef.current) fileInputRef.current.value = ''
         } catch (err) {
@@ -129,12 +118,13 @@ export default function NewPostPage() {
                 </div>
 
                 <div>
-                    <label className="block mb-1 font-medium">标签 (逗号分隔)</label>
-                    <input
-                        type="text"
+                    <label className="block mb-1 font-medium">标签</label>
+                    <CreatableSelect
+                        isMulti
+                        options={existingTags}
                         value={tags}
-                        onChange={e => setTags(e.target.value)}
-                        className="w-full border p-2"
+                        onChange={newValue => setTags([...newValue] as TagOption[])}
+                        placeholder="选择已有标签或输入新标签"
                     />
                 </div>
 
@@ -148,7 +138,6 @@ export default function NewPostPage() {
                     />
                 </div>
 
-                {/* 隐藏 Markdown 图片上传 input */}
                 <input
                     type="file"
                     hidden
@@ -164,7 +153,7 @@ export default function NewPostPage() {
                             value={content}
                             onChange={val => setContent(val || '')}
                             height={400}
-                            commandsFilter={(cmd) => {
+                            commandsFilter={cmd => {
                                 if (cmd.name === 'image') {
                                     return {
                                         ...cmd,
@@ -190,5 +179,4 @@ export default function NewPostPage() {
         </div>
     )
 
-
-    }
+}

@@ -1,9 +1,8 @@
 import { supabaseServer } from '@/lib/supabase.server'
 import Comment from '@/components/Comment'
-import Image from 'next/image'
-import LoginButton from '@/components/LoginButton'
 import { formatDateTime } from '@/lib/date'
-
+import ReactMarkdown from 'react-markdown'
+//这是每一个文章的详情页,根据slug来获取文章的详情(标题内容和图片的)[slug]代表文章标题
 type PageProps = { params: { slug: string } | Promise<{ slug: string }> }
 
 // ⭐ 从 Supabase 获取文章
@@ -66,12 +65,14 @@ export default async function PostDetail({ params }: PageProps) {
     return (
         <main className="max-w-3xl mx-auto p-8 bg-gray-100">
             <article className="prose bg-white p-6 rounded shadow">
-                <LoginButton />
+                {/* <LoginButton /> */}
                 {/* 不再显示封面，只在列表页&分享页展示 */}
 
                 <h1>{post.title}</h1>
                 <p className="text-sm text-gray-500">{formatDateTime(post.date)}</p>
-                <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+                {/* ✅ 使用 react-markdown 渲染 content */}
+                <ReactMarkdown>{post.contentHtml}</ReactMarkdown>
+
             </article>
             <Comment postId={post.slug} />
         </main>
