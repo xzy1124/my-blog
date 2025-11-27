@@ -15,7 +15,17 @@ export async function POST(req: Request) {
         const formData = await req.formData()
         const title = formData.get('title') as string
         const content = formData.get('content') as string
-        const tags = (formData.get('tags') as string)?.split(',').map(t => t.trim()).filter(Boolean)
+        let tags: string[] = []
+
+        const rawTags = formData.get('tags') as string
+        if (rawTags) {
+            try {
+                tags = JSON.parse(rawTags)
+            } catch {
+                tags = []
+            }
+        }
+
         const coverFile = formData.get('cover') as Blob | null
 
         if (!title || !content) return NextResponse.json({ message: '标题和内容必填' }, { status: 400 })
